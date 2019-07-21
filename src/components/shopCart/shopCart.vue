@@ -1,5 +1,24 @@
 <template>
     <div class="shopcart">
+        <transition name="fold">
+            <div class="food-select-list" v-show="listShow">
+                <div class="list-head">
+                    <h1 class="title">购物车</h1>
+                    <span class="empty">清空</span>
+                </div>
+                <div class="title-content" ref="listContent">
+                    <ul class="content-ul">
+                    <li v-for="(food,index) in selectContent" :key="index">
+                            <span class="content-name">{{food.name}}</span>
+                            <div class="content-price">
+                                <p>￥{{food.count*food.price}}</p>
+                                <cartcontrol :food="food" @add="addFood"></cartcontrol>
+                            </div>   
+                        </li> 
+                    </ul>
+                </div>
+            </div>
+        </transition>
         <div class="shopcart-left">
             <div class="icon-box" :class="{'have-food':selectContent.length>0}" @click="togglehide">
                 <i class="icon-shopping_cart" ></i>
@@ -18,23 +37,9 @@
             </div>
         </div>
         <input type="button" :value="foodButton" :class="{'shopcart-right':toatalPrice<mainPrice,'shopcart-pay':toatalPrice>=mainPrice}">
-        <div class="food-select-list" v-show="listShow">
-            <div class="list-head">
-                <h1 class="title">购物车</h1>
-                <span class="empty">清空</span>
-            </div>
-            <div class="title-content" ref="listContent">
-                <ul class="content-ul">
-                   <li v-for="(food,index) in selectContent" :key="index">
-                        <span class="content-name">{{food.name}}</span>
-                        <div class="content-price">
-                            <p>￥{{food.count*food.price}}</p>
-                            <cartcontrol :food="food" @add="addFood"></cartcontrol>
-                        </div>   
-                    </li> 
-                </ul>
-            </div>
-        </div>
+        <transition name="fade">
+            <div class="list-mask" v-show="listShow" @click="hideList"></div>
+        </transition>
     </div>
 </template>
 <script>
@@ -140,6 +145,10 @@ export default {
                 ball.show = false;
                 el.style.display = 'none';
             }
+        },
+        hideList(){
+            console.log("click")
+            this.fold = true
         }
     },
     computed:{
@@ -204,12 +213,32 @@ export default {
         height 52px
         background-color #141d27
         justify-content space-between
+        z-index 10
+        .list-mask
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40;opacity: 1;
+            background: rgba(7,17,27,0.6);
+            z-index -2;
+            &.fade-enter-active, &.fade-leave-active
+                transition: all 0.5s
+            &.fade-enter, &.fade-leave-active
+                opacity: 0
+                background: rgba(7, 17, 27, 0)
         .food-select-list
             position absolute
             width 100%
             top 0px
             left 0px
+            z-index -1
             transform translate3d(0, -100%, 0)
+            &.fold-enter-active, &.fold-leave-active
+                transition: all 0.5s
+            &.fold-enter, &.fold-leave-active
+                transform: translate3d(0, 0, 0)
             .list-head 
                 height: 40px;
                 line-height: 40px;
@@ -266,6 +295,8 @@ export default {
             align-content center
             position relative
             z-index 10
+            width calc(100% - 105px)
+            background-color #141d27
             .icon-box
                 position relative
                 width 44px
