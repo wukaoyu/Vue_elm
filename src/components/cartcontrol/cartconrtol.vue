@@ -6,7 +6,7 @@
             </div>
         </transition>
         <p v-if="food.count>0">{{food.count}}</p>
-        <i class="icon-add_circle" @click="addCars($event)"></i>
+        <i class="icon-add_circle"  @click.stop.prevent="addCars($event)"></i>
     </div>
 </template>
 <script>
